@@ -1,0 +1,5 @@
+JDBC defines the interfaces used for communicating with a database server.
+JDBC implementations (Driver / DriverManager implementations) are specific for each database server.
+To communicate with a database server, a Java program must obtain a Connection.
+DataSource implementations are connection factories.
+Since creating a Connection is an expensive operation connection pools should be used.
