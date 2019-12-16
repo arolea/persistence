@@ -9,6 +9,22 @@ import javax.sql.DataSource;
 
 /**
  * This usually gets configured by spring auto-configuration
+ *
+ * Query execution passes through three modules
+ * 1. Parser - ensures the SQL is valid and afterwards converts it to the parse tree / query tree
+ * 2. Optimizer - analyzes the query tree and decides on the most efficient access plan (indexes to use, scan, etc)
+ * 3. Executor - fetched the data based on the access plan received from the optimizer
+ *
+ * Execution plan performance is based on the cardinality of the given bind parameters.
+ * The more common a value is the more likely a table scan makes sense.
+ * The less common an indexed value is, the more an index in that column makes sense.
+ *
+ * Server-side prepared statements caching allow access plan reuse between executions with different parameters.
+ * Client-side prepared statements caching reduce the processing on client side.
+ * The client-side cache is generally specific to each connection.
+ *
+ * Postgres can cache multiple plans for multiple sets of bind parameters for a single prepared statement.
+ * Postgres falls back to a default generic plan if the performance gains of caching multiple plans are low.
  */
 @Configuration
 public class DataSourceConfig {
@@ -28,7 +44,7 @@ public class DataSourceConfig {
 	}
 
 	/**
-	 * Uses PreparedStatement under the hood in order to defend against SQL injection
+	 * Uses PreparedStatement under the hood in order to defend against SQL injection and benefit out of caching
 	 */
 	@Bean
 	public JdbcTemplate jdbcTemplate(){
