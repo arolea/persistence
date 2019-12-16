@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -30,6 +31,9 @@ class JDBCTests {
 	@Autowired
 	private StudentDAO studentDAO;
 
+	@Autowired
+	private TransactionTemplate transactionTemplate;
+
 	@Test
 	void contextLoads(){
 		assertThat(dataSource)
@@ -42,6 +46,10 @@ class JDBCTests {
 
 		assertThat(studentDAO)
 				.as("StudentDAO is properly initialized")
+				.isNotNull();
+
+		assertThat(transactionTemplate)
+				.as("TransactionTemplate is properly initialized")
 				.isNotNull();
 	}
 
@@ -106,6 +114,34 @@ class JDBCTests {
 					.isEqualTo("Doe");
 		});
 
+	}
+
+	@Test
+	@DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+	void testTransaction() {
+		try {
+			transactionTemplate.executeWithoutResult(status -> {
+				studentDAO.save(Student.builder()
+						.firstName("John")
+						.lastName("Doe")
+						.build()
+				);
+
+				long studentCount = studentDAO.count();
+				assertThat(studentCount)
+						.as("Student count is 1 after a successful insert")
+						.isEqualTo(1);
+
+				throw new RuntimeException("Simulate error");
+			});
+		} catch (Exception e) {
+			// ignore simulated error
+		}
+
+		long studentCount = studentDAO.count();
+		assertThat(studentCount)
+				.as("Student count is 0 after rollback")
+				.isEqualTo(0);
 	}
 
 	@Test

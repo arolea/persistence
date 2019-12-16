@@ -2,9 +2,13 @@ package com.rolea.learning.jdbc.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import javax.sql.DataSource;
 
 /**
@@ -29,6 +33,9 @@ import javax.sql.DataSource;
 @Configuration
 public class DataSourceConfig {
 
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
 	/**
 	 * Creates a Hikari Data Source that supports connection pooling
 	 * See https://github.com/brettwooldridge/HikariCP for all configuration options
@@ -49,6 +56,11 @@ public class DataSourceConfig {
 	@Bean
 	public JdbcTemplate jdbcTemplate(){
 		return new JdbcTemplate(dataSource());
+	}
+
+	@Bean
+	public TransactionTemplate transactionTemplate(){
+		return new TransactionTemplate(transactionManager);
 	}
 
 }
