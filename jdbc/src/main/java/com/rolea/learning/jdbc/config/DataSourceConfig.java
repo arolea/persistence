@@ -7,11 +7,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
+/**
+ * This usually gets configured by spring auto-configuration
+ */
 @Configuration
 public class DataSourceConfig {
 
 	/**
-	 * This usually gets configured by spring auto-configuration
 	 * Creates a Hikari Data Source that supports connection pooling
 	 * See https://github.com/brettwooldridge/HikariCP for all configuration options
 	 */
@@ -26,7 +28,7 @@ public class DataSourceConfig {
 	}
 
 	/**
-	 * This usually gets configured by spring auto-configuration
+	 * Uses PreparedStatement under the hood in order to defend against SQL injection
 	 */
 	@Bean
 	public JdbcTemplate jdbcTemplate(){
