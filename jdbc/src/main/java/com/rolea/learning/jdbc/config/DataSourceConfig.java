@@ -33,6 +33,9 @@ import javax.sql.DataSource;
 @Configuration
 public class DataSourceConfig {
 
+	/**
+	 * DataSourceTransactionManager, which is a PlatformTransactionManager for a single JDBC data source
+	 */
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 
@@ -52,6 +55,7 @@ public class DataSourceConfig {
 
 	/**
 	 * Uses PreparedStatement under the hood in order to defend against SQL injection and benefit out of caching
+	 * Thread safe once configured
 	 */
 	@Bean
 	public JdbcTemplate jdbcTemplate(){

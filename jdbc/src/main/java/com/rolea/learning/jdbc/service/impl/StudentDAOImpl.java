@@ -4,14 +4,12 @@ import com.rolea.learning.jdbc.domain.Student;
 import com.rolea.learning.jdbc.mapper.StudentMapper;
 import com.rolea.learning.jdbc.service.StudentDAO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +26,9 @@ public class StudentDAOImpl implements StudentDAO {
 	private static final String SQL_DELETE_ONE = "DELETE FROM student WHERE id = ?";
 	private static final String SQL_COUNT = "SELECT COUNT(*) FROM student";
 
+	/**
+	 * execute(...) methods are used for DDL statements
+	 */
 	@Autowired
 	private JdbcTemplate template;
 
@@ -58,24 +59,10 @@ public class StudentDAOImpl implements StudentDAO {
 	 */
 	@Override
 	public void saveAll(List<Student> students) {
-		for (int i = 0; i < students.size(); i += BATCH_SIZE) {
-			final List<Student> currentBatch = students.subList(i, i
-					+ BATCH_SIZE > students.size() ? students.size() : i
-					+ BATCH_SIZE);
-			template.batchUpdate(SQL_INSERT, new BatchPreparedStatementSetter() {
-				@Override
-				public void setValues(PreparedStatement ps, int j) throws SQLException {
-					Student student = currentBatch.get(j);
-					ps.setString(1, student.getFirstName());
-					ps.setString(2, student.getLastName());
-				}
-
-				@Override
-				public int getBatchSize() {
-					return currentBatch.size();
-				}
-			});
-		}
+		template.batchUpdate(SQL_INSERT, students, BATCH_SIZE, (ps, student) -> {
+			ps.setString(1, student.getFirstName());
+			ps.setString(2, student.getLastName());
+		});
 	}
 
 	@Override
