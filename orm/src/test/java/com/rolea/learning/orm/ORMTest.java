@@ -39,6 +39,7 @@ class ORMTest {
 	private CourseRepository courseRepository;
 
 	// TODO review https://github.com/hibernate/hibernate-orm/blob/master/etc/hibernate.properties
+	// TODO https://thoughts-on-java.org/5-common-hibernate-mistakes-that-cause-dozens-of-unexpected-queries/
 
 	@Test
 	void oneToOneTest(){
