@@ -46,7 +46,7 @@ public class StudentDAOImpl implements StudentDAO {
 	public Long save(Student student) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		template.update(connection -> {
-			PreparedStatement ps = connection.prepareStatement(SQL_INSERT, new String[] {"id"});
+			PreparedStatement ps = connection.prepareStatement(SQL_INSERT, new String[] {"addressId"});
 			ps.setString(1, student.getFirstName());
 			ps.setString(2, student.getLastName());
 			return ps;

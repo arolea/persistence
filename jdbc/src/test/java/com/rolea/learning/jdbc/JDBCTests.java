@@ -63,7 +63,7 @@ class JDBCTests {
 
 		long studentId = studentDAO.save(student);
 		assertThat(studentId)
-				.as("Student id is generated upon insert")
+				.as("Student addressId is generated upon insert")
 				.isNotEqualTo(0L);
 
 		long studentCount = studentDAO.count();
@@ -73,7 +73,7 @@ class JDBCTests {
 
 		Optional<Student> dbStudentOptional = studentDAO.findOne(studentId);
 		assertThat(dbStudentOptional.isPresent())
-				.as("A student is returned from db upon fetch by id")
+				.as("A student is returned from db upon fetch by addressId")
 				.isTrue();
 		Student dbStudent = dbStudentOptional.get();
 		assertThat(dbStudent.getFirstName())

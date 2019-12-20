@@ -4,7 +4,7 @@
 create sequence student_seq;
 
 create table if not exists student (
---  id int auto_increment primary key,
+--  addressId int auto_increment primary key,
   id bigint default student_seq.nextval primary key,
   first_name varchar(100),
   last_name varchar(100)
