@@ -1,10 +1,11 @@
 package com.rolea.learning.orm.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -17,10 +18,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "address")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Getter
+@Setter
 @EqualsAndHashCode(of = {"addressId"})
 @ToString(of = {"addressId", "city", "street"})
 public class Address {

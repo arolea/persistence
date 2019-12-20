@@ -1,15 +1,18 @@
 package com.rolea.learning.orm;
 
 import com.rolea.learning.orm.domain.Address;
+import com.rolea.learning.orm.domain.Course;
 import com.rolea.learning.orm.domain.Grade;
 import com.rolea.learning.orm.domain.Student;
 import com.rolea.learning.orm.repository.AddressRepository;
+import com.rolea.learning.orm.repository.CourseRepository;
 import com.rolea.learning.orm.repository.GradeRepository;
 import com.rolea.learning.orm.repository.StudentRepository;
+import com.rolea.learning.orm.service.StudentService;
+import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import java.util.Optional;
 
@@ -23,28 +26,32 @@ class ORMTest {
 	@Autowired
 	private StudentRepository studentRepository;
 
-	// Normally, you should not need a repository for the managed side of a one-to-one relationship
 	@Autowired
 	private AddressRepository addressRepository;
 
 	@Autowired
 	private GradeRepository gradeRepository;
 
+	@Autowired
+	private StudentService studentService;
+
+	@Autowired
+	private CourseRepository courseRepository;
+
 	// TODO review https://github.com/hibernate/hibernate-orm/blob/master/etc/hibernate.properties
 
-	/**
-	 * You can persist the managed side of a one to one relationship via the owning side
-	 */
 	@Test
-	void manage_one_to_one_via_owning_side(){
-		Student student = studentRepository.save(Student.builder()
-				.firstName("John")
-				.lastName("Doe")
-				.address(Address.builder()
-						.street("Street")
-						.city("City")
-						.build())
-				.build());
+	void oneToOneTest(){
+		Address address = new Address();
+		address.setStreet("Street");
+		address.setCity("City");
+
+		Student student = new Student();
+		student.setFirstName("John");
+		student.setLastName("Doe");
+		student.setAddress(address);
+
+		student = studentRepository.save(student);
 		Optional<Student> studentOptional = studentRepository.findById(student.getStudentId());
 		Optional<Address> addressOptional = addressRepository.findById(student.getAddress().getAddressId());
 
@@ -59,38 +66,68 @@ class ORMTest {
 				.isTrue();
 	}
 
-	/**
-	 * You can't persist the owning side of a one to one relationship via the managed side
-	 */
 	@Test
-	void manage_one_to_one_via_managed_side(){
-		assertThrows(InvalidDataAccessApiUsageException.class, () -> addressRepository.save(Address.builder()
-				.street("Street")
-				.city("City")
-				.student(Student.builder()
-						.firstName("John")
-						.lastName("Doe")
-						.build())
-				.build()));
+	void oneToManyTest(){
+		Student student = new Student();
+		student.setFirstName("John");
+		student.setLastName("Doe");
+		student = studentRepository.save(student);
+
+		Grade firstGrade = new Grade();
+		firstGrade.setGrade(7.5);
+		firstGrade.setStudent(student);
+
+		Grade secondGrade = new Grade();
+		secondGrade.setGrade(8.2);
+		secondGrade.setStudent(student);
+
+		gradeRepository.saveAll(asList(firstGrade, secondGrade));
+
+		Optional<Student> studentOptional = studentRepository.findById(student.getStudentId());
+
+		// grades are not eagerly fetched
+		assertThat(studentOptional.isPresent())
+				.as("Student is properly fetched from the DB via its onw repository")
+				.isTrue();
+		studentOptional.ifPresent(stud ->
+				assertThrows(LazyInitializationException.class, () -> stud.getGrades().size()));
+		student = studentService.loadStudentWithGrades(student.getStudentId());
+		assertThat(student.getGrades().size())
+				.as("Grades are lazily loaded via transactional service")
+				.isEqualTo(2);
 	}
 
 	@Test
-	void manage_one_to_many_via_owning_side(){
-		Student student = studentRepository.save(Student.builder()
-				.firstName("John")
-				.lastName("Doe")
-				.grades(asList(
-						Grade.builder()
-								.grade(7.5)
-								.build(),
-						Grade.builder()
-								.grade(8.3)
-								.build()
-				))
-				.build());
+	void manyToManyTest(){
+		Student john = new Student();
+		john.setFirstName("John");
+		john.setLastName("Doe");
+		john = studentRepository.save(john);
 
-		System.out.println(student);
+		Course math = new Course();
+		math.setCourseName("Math");
+		math = courseRepository.save(math);
 
+		Course biology = new Course();
+		biology.setCourseName("Biology");
+		biology = courseRepository.save(biology);
+
+		john.getCourses().add(math);
+		john.getCourses().add(biology);
+		john = studentRepository.save(john);
+
+		Optional<Student> studentOptional = studentRepository.findById(john.getStudentId());
+
+		assertThat(studentOptional.isPresent())
+				.as("Student is properly fetched from the DB via its onw repository")
+				.isTrue();
+		studentOptional.ifPresent(stud ->
+				assertThrows(LazyInitializationException.class, () -> stud.getCourses().size()));
+
+		john = studentService.loadStudentWithGrades(john.getStudentId());
+		assertThat(john.getCourses().size())
+				.as("Courses are lazily loaded via transactional service")
+				.isEqualTo(2);
 	}
 
 }

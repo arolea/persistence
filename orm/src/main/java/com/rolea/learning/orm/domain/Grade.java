@@ -1,10 +1,11 @@
 package com.rolea.learning.orm.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -13,15 +14,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "grade")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Getter
+@Setter
 @EqualsAndHashCode(of = {"gradeId"})
 @ToString(of = {"gradeId", "grade"})
 public class Grade {
@@ -35,6 +35,7 @@ public class Grade {
 	private Double grade;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "student_id", referencedColumnName = "student_id")
 	private Student student;
 
 }
