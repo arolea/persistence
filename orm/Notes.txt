@@ -1,0 +1,21 @@
+Eager fetching does not necessarily mean in a single query.
+Dependencies are fetched before the entity is returned to the caller, not necessarily in a single query.
+
+Entity states
+New (Transient) - new entity, not mapped to a database row.
+Once it becomes managed, the Persistence Context will issue an insert statement at flush-time.
+
+Managed (Persistent) - entity associated with a database row and managed by the current running Persistence Context.
+State changes are detected via dirty checking mechanism and propagated to the database as updates at flush-time.
+
+Detached - when the persistent context closes, all managed entities become detached.
+Successive changes will no longer be tracked, and no automatic database synchronization is going to happen.
+
+Removed - entity is scheduled for deletion and the actual database delete statement is executed during flushing.
+
+The Persistence Context captures entity state changes and during flushing translates them to SQL statements.
+The JPA EntityManager and the Hibernate Session are gateways towards the underlying Persistence Context.
+The Persistence Context is also known as the first-level cache and is not shared between transactions.
+The second-level cache is associated with an EntityManagerFactory , and all Persistence Contexts have access to it.
+The second-level cache has to use a clustered cache implementation if the application is distributed.
+The Persistence Context has to be (manually) flushed before native queries in order to ensure consistency.
