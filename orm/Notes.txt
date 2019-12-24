@@ -19,3 +19,6 @@ The Persistence Context is also known as the first-level cache and is not shared
 The second-level cache is associated with an EntityManagerFactory , and all Persistence Contexts have access to it.
 The second-level cache has to use a clustered cache implementation if the application is distributed.
 The Persistence Context has to be (manually) flushed before native queries in order to ensure consistency.
+
+Prefer numerical sequences over UUIDs for PK, since numerical sequences take less space to store and index.
+Numerical sequences also avoid fragmentation for clustered indexes.

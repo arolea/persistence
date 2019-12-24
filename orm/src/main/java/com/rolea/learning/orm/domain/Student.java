@@ -1,25 +1,9 @@
 package com.rolea.learning.orm.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Singular;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,8 +13,18 @@ import java.util.Set;
 @Setter
 public class Student {
 
+	/**
+	 * Sequences can be used in JDBC batches (relative to Identity generated ids, which can't)
+	 * Sequences have a locking mechanism that happens outside the transactional context, increasing scalability
+	 *
+	 * Sequences assign batches of ids that the client uses offline (in order to avoid contention on db)
+	 * The batch size (configured via allocationSize) should match the number of inserts in a transaction
+	 *
+	 * Sequences are the most efficient identifier choice, being highly optimized and integrating with batching
+	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_generator")
+	@SequenceGenerator(name="student_generator", sequenceName = "student_seq")
 	@Column(name = "student_id")
 	private Long studentId;
 
