@@ -1,6 +1,3 @@
-Eager fetching does not necessarily mean in a single query.
-Dependencies are fetched before the entity is returned to the caller, not necessarily in a single query.
-
 Entity states
 New (Transient) - new entity, not mapped to a database row.
 Once it becomes managed, the Persistence Context will issue an insert statement at flush-time.
@@ -13,12 +10,35 @@ Successive changes will no longer be tracked, and no automatic database synchron
 
 Removed - entity is scheduled for deletion and the actual database delete statement is executed during flushing.
 
-The Persistence Context captures entity state changes and during flushing translates them to SQL statements.
-The JPA EntityManager and the Hibernate Session are gateways towards the underlying Persistence Context.
-The Persistence Context is also known as the first-level cache and is not shared between transactions.
-The second-level cache is associated with an EntityManagerFactory , and all Persistence Contexts have access to it.
-The second-level cache has to use a clustered cache implementation if the application is distributed.
-The Persistence Context has to be (manually) flushed before native queries in order to ensure consistency.
+SessionFactory (Hibernate) / EntityManagerFactory (JPA)
+Singleton, manages the second level caches, connection pools and acts as a factory for Sessions
+All Persistence Contexts have access to the second level cache
+The second-level cache has to use a clustered cache implementation if the application is distributed
+
+Session (Hibernate) / EntityManager (JPA)
+Thread scoped, manages the first level cache, wraps a JDBC Connection and a acts as a factory for Transaction instances
+The first level cache is not shared between Transactions
+The Persistence Context captures entity state changes and during flushing translates them to SQL statements
+The EntityManager / Session are gateways towards the underlying Persistence Context
+The Persistence Context has to be (manually) flushed before native queries in order to ensure consistency
+
+Transaction (Hibernate) / EntityTransaction (JPA)
+Thread scoped object used for individual transactions
 
 Prefer numerical sequences over UUIDs for PK, since numerical sequences take less space to store and index.
 Numerical sequences also avoid fragmentation for clustered indexes.
+
+Each time you fetch the same entity from the db the same instance is returned by Hibernate
+Read and write skew can happen if multiple entities that should be updated atomically from a business perspective
+are updated in parts
+
+Eager fetching does not necessarily imply using a single query, only that dependencies are fetched before the entity is
+returned to the caller.
+
+Clustered index: rows are stored physically in the same order as in the index, can be only one per table (PK).
+
+Cache synchronization
+Cache-aside - manage both cache and DB from application side
+Read-through - manage only the cache, on reads the cache is searched first and if there's a miss the db in queried
+Write-through - manage only the cache, on writes the cache updates the db
+Write-behind - manage only the cache, with additional batching in order to reduce db trips for writes

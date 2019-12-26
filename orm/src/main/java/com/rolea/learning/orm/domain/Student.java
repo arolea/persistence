@@ -39,14 +39,53 @@ public class Student {
 	@JoinColumn(name = "address_id", referencedColumnName = "address_id")
 	private Address address;
 
-	@OneToMany(mappedBy = "student")
+	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Grade> grades = new HashSet<>();
 
+	/**
+	 * Big performance gain out of using Set instead of List for many to many (on entity removal)
+	 */
 	// @JoinTable only on the owning side of the one to one relationship
-	@ManyToMany()
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(name = "student_course",
 			joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "student_id"),
 			inverseJoinColumns = @JoinColumn(name = "course_id", referencedColumnName = "course_id"))
 	private Set<Course> courses = new HashSet<>();
+
+	/**
+	 * Used only in transactional contexts (on managed entities) in order to sync entities
+	 */
+
+	public void addAddress(Address address){
+		this.address = address;
+		address.setStudent(this);
+	}
+
+	public void removeAddress(Address address){
+		if(address != null){
+			address.setStudent(null);
+		}
+		this.address = null;
+	}
+
+	public void addGrade(Grade grade){
+		this.getGrades().add(grade);
+		grade.setStudent(this);
+	}
+
+	public void removeGrade(Grade grade){
+		this.getGrades().remove(grade);
+		grade.setStudent(null);
+	}
+
+	public void addCourse(Course course){
+		this.courses.add(course);
+		course.getStudents().add(this);
+	}
+
+	public void removeCourse(Course course){
+		this.courses.remove(course);
+		course.getStudents().remove(this);
+	}
 
 }

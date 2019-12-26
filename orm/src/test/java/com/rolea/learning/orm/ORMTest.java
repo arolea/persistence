@@ -98,11 +98,6 @@ class ORMTest {
 
 	@Test
 	void manyToManyTest(){
-		Student john = new Student();
-		john.setFirstName("John");
-		john.setLastName("Doe");
-		john = studentRepository.save(john);
-
 		Course math = new Course();
 		math.setCourseName("Math");
 		math = courseRepository.save(math);
@@ -111,8 +106,13 @@ class ORMTest {
 		biology.setCourseName("Biology");
 		biology = courseRepository.save(biology);
 
-		john.getCourses().add(math);
-		john.getCourses().add(biology);
+		Student john = new Student();
+		john.setFirstName("John");
+		john.setLastName("Doe");
+		john = studentRepository.save(john);
+
+		john.addCourse(math);
+		john.addCourse(biology);
 		john = studentRepository.save(john);
 
 		Optional<Student> studentOptional = studentRepository.findById(john.getStudentId());
