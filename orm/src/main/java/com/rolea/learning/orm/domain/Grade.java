@@ -1,18 +1,15 @@
 package com.rolea.learning.orm.domain;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "grade")
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"gradeId"})
-@ToString(of = {"gradeId", "grade"})
 public class Grade {
 
 	@Id
@@ -28,4 +25,16 @@ public class Grade {
 	@JoinColumn(name = "student_id", referencedColumnName = "student_id")
 	private Student student;
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Grade grade = (Grade) o;
+		return Objects.equals(gradeId, grade.gradeId);
+	}
+
+	@Override
+	public int hashCode() {
+		return 31;
+	}
 }

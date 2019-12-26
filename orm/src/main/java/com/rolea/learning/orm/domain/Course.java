@@ -1,20 +1,17 @@
 package com.rolea.learning.orm.domain;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "course")
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"courseId"})
-@ToString(of = {"courseId", "courseName"})
 public class Course {
 
 	@Id
@@ -29,4 +26,16 @@ public class Course {
 	@ManyToMany(mappedBy = "courses")
 	private Set<Student> students = new HashSet<>();
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Course course = (Course) o;
+		return Objects.equals(courseId, course.courseId);
+	}
+
+	@Override
+	public int hashCode() {
+		return 31;
+	}
 }

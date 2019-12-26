@@ -1,18 +1,15 @@
 package com.rolea.learning.orm.domain;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "address")
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"addressId"})
-@ToString(of = {"addressId", "city", "street"})
 public class Address {
 
 	@Id
@@ -32,4 +29,16 @@ public class Address {
 	@OneToOne(mappedBy = "address")
 	private Student student;
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Address address = (Address) o;
+		return Objects.equals(addressId, address.addressId);
+	}
+
+	@Override
+	public int hashCode() {
+		return 31;
+	}
 }

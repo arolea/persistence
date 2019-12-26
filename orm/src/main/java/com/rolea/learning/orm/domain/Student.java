@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -88,4 +89,16 @@ public class Student {
 		course.getStudents().remove(this);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Student student = (Student) o;
+		return Objects.equals(studentId, student.studentId);
+	}
+
+	@Override
+	public int hashCode() {
+		return 31;
+	}
 }

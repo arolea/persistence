@@ -9,7 +9,6 @@ import com.rolea.learning.orm.repository.CourseRepository;
 import com.rolea.learning.orm.repository.GradeRepository;
 import com.rolea.learning.orm.repository.StudentRepository;
 import com.rolea.learning.orm.service.StudentService;
-import io.micrometer.core.instrument.binder.jpa.HibernateMetrics;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
