@@ -1,8 +1,8 @@
 Entity states
 New (Transient) - new entity, not mapped to a database row.
-Once it becomes managed, the Persistence Context will issue an insert statement at flush-time.
+Once it becomes managed, the persistence context will issue an insert statement at flush-time.
 
-Managed (Persistent) - entity associated with a database row and managed by the current running Persistence Context.
+Managed (Persistent) - entity associated with a database row and managed by the current running persistence context.
 State changes are detected via dirty checking mechanism and propagated to the database as updates at flush-time.
 
 Detached - when the persistent context closes, all managed entities become detached.
@@ -12,15 +12,16 @@ Removed - entity is scheduled for deletion and the actual database delete statem
 
 SessionFactory (Hibernate) / EntityManagerFactory (JPA)
 Singleton, manages the second level caches, connection pools and acts as a factory for Sessions
-All Persistence Contexts have access to the second level cache
+All Sessions / EntityManagers have access to the second level cache
 The second-level cache has to use a clustered cache implementation if the application is distributed
 
 Session (Hibernate) / EntityManager (JPA)
 Thread scoped, manages the first level cache, wraps a JDBC Connection and a acts as a factory for Transaction instances
 The first level cache is not shared between Transactions
-The Persistence Context captures entity state changes and during flushing translates them to SQL statements
-The EntityManager / Session are gateways towards the underlying Persistence Context
-The Persistence Context has to be (manually) flushed before native queries in order to ensure consistency
+The EntityManager / Session are gateways towards the underlying persistence context
+The persistence context captures entity state changes and during flushing translates them to SQL statements
+You can configure when the flushing takes place on a Session basis (after statement / after transaction / manual)
+The persistence context has to be (manually) flushed before native queries in order to ensure consistency
 
 Transaction (Hibernate) / EntityTransaction (JPA)
 Thread scoped object used for individual transactions
@@ -35,6 +36,9 @@ are updated in parts
 Eager fetching does not necessarily imply using a single query, only that dependencies are fetched before the entity is
 returned to the caller.
 
+Entity relationships can be either unidirectional or bidirectional. For bidirectional mappings, having the side that
+has the private key (for one to one and one to many) manage the synchronization is better from a performance standpoint
+
 Clustered index: rows are stored physically in the same order as in the index, can be only one per table (PK).
 
 Cache synchronization
@@ -42,3 +46,9 @@ Cache-aside - manage both cache and DB from application side
 Read-through - manage only the cache, on reads the cache is searched first and if there's a miss the db in queried
 Write-through - manage only the cache, on writes the cache updates the db
 Write-behind - manage only the cache, with additional batching in order to reduce db trips for writes
+
+Fetch modes (@Fetch annotation)
+SELECT - fetch lazily using a secondary select for each entity (similar with Lazy from JPA)
+JOIN - use an outer join to load the related entities (similar with Eager from JPA / fetch join from JPQL)
+SUBSELECT - for lazy collections only, loads all elements of all collections of the same role for all owners associated
+with the persistence context using a single secondary select

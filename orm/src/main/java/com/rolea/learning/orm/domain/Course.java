@@ -23,7 +23,7 @@ public class Course {
 	@Column(name = "course_name")
 	private String courseName;
 
-	@ManyToMany(mappedBy = "courses")
+	@ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
 	private Set<Student> students = new HashSet<>();
 
 	@Override
@@ -31,11 +31,14 @@ public class Course {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Course course = (Course) o;
-		return Objects.equals(courseId, course.courseId);
+		return Objects.equals(courseId, course.courseId) &&
+				Objects.equals(courseName, course.courseName) &&
+				Objects.equals(students, course.students);
 	}
 
 	@Override
 	public int hashCode() {
 		return 31;
 	}
+
 }

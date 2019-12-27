@@ -24,9 +24,8 @@ public class Address {
 	@Column(name = "city")
 	private String city;
 
-	// no @JoinColumn on the managed side of the one to one relationship
-	// adding a join column here would create a bi-directional relationship
-	@OneToOne(mappedBy = "address")
+	@OneToOne(fetch = FetchType.LAZY)
+	@MapsId
 	private Student student;
 
 	@Override
@@ -34,7 +33,10 @@ public class Address {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Address address = (Address) o;
-		return Objects.equals(addressId, address.addressId);
+		return Objects.equals(addressId, address.addressId) &&
+				Objects.equals(street, address.street) &&
+				Objects.equals(city, address.city) &&
+				Objects.equals(student, address.student);
 	}
 
 	@Override

@@ -1,9 +1,5 @@
 package com.rolea.learning.orm;
 
-import com.rolea.learning.orm.domain.Address;
-import com.rolea.learning.orm.domain.Student;
-import com.rolea.learning.orm.repository.StudentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,8 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ORMApplication implements CommandLineRunner {
 
-	@Autowired
-	private StudentRepository studentRepository;
+//	@Autowired
+//	private StudentRepository studentRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ORMApplication.class, args);
@@ -24,15 +20,15 @@ public class ORMApplication implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-		Address address = new Address();
-		address.setStreet("Street");
-		address.setCity("City");
-
-		Student student = new Student();
-		student.setFirstName("John");
-		student.setLastName("Doe");
-		student.setAddress(address);
-
-		student = studentRepository.save(student);
+//		Address address = new Address();
+//		address.setStreet("Street");
+//		address.setCity("City");
+//
+//		Student student = new Student();
+//		student.setFirstName("John");
+//		student.setLastName("Doe");
+//		student.setAddress(address);
+//
+//		student = studentRepository.save(student);
 	}
 }

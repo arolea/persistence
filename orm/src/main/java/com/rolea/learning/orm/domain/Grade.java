@@ -29,12 +29,15 @@ public class Grade {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		Grade grade = (Grade) o;
-		return Objects.equals(gradeId, grade.gradeId);
+		Grade grade1 = (Grade) o;
+		return Objects.equals(gradeId, grade1.gradeId) &&
+				Objects.equals(grade, grade1.grade) &&
+				Objects.equals(student, grade1.student);
 	}
 
 	@Override
 	public int hashCode() {
 		return 31;
 	}
+
 }

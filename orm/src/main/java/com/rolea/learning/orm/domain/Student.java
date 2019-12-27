@@ -35,19 +35,16 @@ public class Student {
 	@Column(name = "last_name")
 	private String lastName;
 
-	// @JoinColumn only on the owning side of the one to one relationship
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "address_id", referencedColumnName = "address_id")
+	@OneToOne(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Address address;
 
-	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Set<Grade> grades = new HashSet<>();
 
 	/**
 	 * Big performance gain out of using Set instead of List for many to many (on entity removal)
 	 */
-	// @JoinTable only on the owning side of the one to one relationship
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
 	@JoinTable(name = "student_course",
 			joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "student_id"),
 			inverseJoinColumns = @JoinColumn(name = "course_id", referencedColumnName = "course_id"))
@@ -94,11 +91,17 @@ public class Student {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Student student = (Student) o;
-		return Objects.equals(studentId, student.studentId);
+		return Objects.equals(studentId, student.studentId) &&
+				Objects.equals(firstName, student.firstName) &&
+				Objects.equals(lastName, student.lastName) &&
+				Objects.equals(address, student.address) &&
+				Objects.equals(grades, student.grades) &&
+				Objects.equals(courses, student.courses);
 	}
 
 	@Override
 	public int hashCode() {
 		return 31;
 	}
+
 }
