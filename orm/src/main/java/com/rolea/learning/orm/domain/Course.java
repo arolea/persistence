@@ -14,31 +14,30 @@ import java.util.Set;
 @Setter
 public class Course {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "course_generator")
-	@SequenceGenerator(name="course_generator", sequenceName = "course_seq")
-	@Column(name = "course_id")
-	private Long courseId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "course_generator")
+    @SequenceGenerator(name = "course_generator", sequenceName = "course_seq")
+    @Column(name = "course_id")
+    private Long courseId;
 
-	@Column(name = "course_name")
-	private String courseName;
+    @Column(name = "course_name")
+    private String courseName;
 
-	@ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
-	private Set<Student> students = new HashSet<>();
+    @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
+    private Set<Student> students = new HashSet<>();
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Course course = (Course) o;
-		return Objects.equals(courseId, course.courseId) &&
-				Objects.equals(courseName, course.courseName) &&
-				Objects.equals(students, course.students);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return Objects.equals(courseId, course.courseId) &&
+                Objects.equals(courseName, course.courseName);
+    }
 
-	@Override
-	public int hashCode() {
-		return 31;
-	}
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 
 }

@@ -80,7 +80,7 @@ public class StudentService {
 
                     return student;
                 })
-				.orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new RuntimeException("Student not found"));
     }
 
     @Transactional

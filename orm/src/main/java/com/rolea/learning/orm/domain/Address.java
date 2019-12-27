@@ -12,35 +12,34 @@ import java.util.Objects;
 @Setter
 public class Address {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_generator")
-	@SequenceGenerator(name="address_generator", sequenceName = "address_seq")
-	@Column(name = "address_id")
-	private Long addressId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_generator")
+    @SequenceGenerator(name = "address_generator", sequenceName = "address_seq")
+    @Column(name = "address_id")
+    private Long addressId;
 
-	@Column(name = "street")
-	private String street;
+    @Column(name = "street")
+    private String street;
 
-	@Column(name = "city")
-	private String city;
+    @Column(name = "city")
+    private String city;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@MapsId
-	private Student student;
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    private Student student;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Address address = (Address) o;
-		return Objects.equals(addressId, address.addressId) &&
-				Objects.equals(street, address.street) &&
-				Objects.equals(city, address.city) &&
-				Objects.equals(student, address.student);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Address address = (Address) o;
+        return Objects.equals(addressId, address.addressId) &&
+                Objects.equals(street, address.street) &&
+                Objects.equals(city, address.city);
+    }
 
-	@Override
-	public int hashCode() {
-		return 31;
-	}
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }
