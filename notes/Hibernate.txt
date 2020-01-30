@@ -10,10 +10,8 @@ Successive changes will no longer be tracked, and no automatic database synchron
 
 Removed - entity is scheduled for deletion and the actual database delete statement is executed during flushing.
 
-SessionFactory (Hibernate) / EntityManagerFactory (JPA)
-Singleton, manages the second level caches, connection pools and acts as a factory for Sessions
-All Sessions / EntityManagers have access to the second level cache
-The second-level cache has to use a clustered cache implementation if the application is distributed
+Transaction (Hibernate) / EntityTransaction (JPA)
+Thread scoped object used for individual transactions
 
 Session (Hibernate) / EntityManager (JPA)
 Thread scoped, manages the first level cache, wraps a JDBC Connection and a acts as a factory for Transaction instances
@@ -23,8 +21,10 @@ The persistence context captures entity state changes and during flushing transl
 You can configure when the flushing takes place on a Session basis (after statement / after transaction / manual)
 The persistence context has to be (manually) flushed before native queries in order to ensure consistency
 
-Transaction (Hibernate) / EntityTransaction (JPA)
-Thread scoped object used for individual transactions
+SessionFactory (Hibernate) / EntityManagerFactory (JPA)
+Singleton, manages the second level caches, connection pools and acts as a factory for Sessions
+All Sessions / EntityManagers have access to the second level cache
+The second-level cache has to use a clustered cache implementation if the application is distributed
 
 Prefer numerical sequences over UUIDs for PK, since numerical sequences take less space to store and index.
 Numerical sequences also avoid fragmentation for clustered indexes.

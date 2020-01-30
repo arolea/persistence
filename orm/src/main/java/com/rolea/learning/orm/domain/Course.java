@@ -31,7 +31,8 @@ public class Course {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Course course = (Course) o;
-        return Objects.equals(courseId, course.courseId) &&
+        return courseId != null &&
+                Objects.equals(courseId, course.courseId) &&
                 Objects.equals(courseName, course.courseName);
     }
 

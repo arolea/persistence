@@ -13,8 +13,6 @@ import java.util.Objects;
 public class Address {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_generator")
-    @SequenceGenerator(name = "address_generator", sequenceName = "address_seq")
     @Column(name = "address_id")
     private Long addressId;
 
@@ -33,7 +31,8 @@ public class Address {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Address address = (Address) o;
-        return Objects.equals(addressId, address.addressId) &&
+        return addressId != null &&
+                Objects.equals(addressId, address.addressId) &&
                 Objects.equals(street, address.street) &&
                 Objects.equals(city, address.city);
     }

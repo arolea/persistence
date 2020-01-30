@@ -25,7 +25,7 @@ public class Student {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_generator")
-    @SequenceGenerator(name = "student_generator", sequenceName = "student_seq")
+    @SequenceGenerator(name = "student_generator", sequenceName = "student_seq", allocationSize = 50, initialValue = 1)
     @Column(name = "student_id")
     private Long studentId;
 
@@ -95,7 +95,8 @@ public class Student {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Student student = (Student) o;
-        return Objects.equals(studentId, student.studentId) &&
+        return studentId != null &&
+                Objects.equals(studentId, student.studentId) &&
                 Objects.equals(firstName, student.firstName) &&
                 Objects.equals(lastName, student.lastName);
     }
