@@ -4,6 +4,8 @@ target/
 !**/src/main/**
 !**/src/test/**
 
+liquibase-sample/hello-world-db/
+
 ### STS ###
 .apt_generated
 .classpath

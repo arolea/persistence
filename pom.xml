@@ -87,6 +87,7 @@
 	<modules>
 		<module>jdbc</module>
 		<module>orm</module>
+		<module>liquibase-sample</module>
 	</modules>
 
 </project>
