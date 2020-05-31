@@ -30,7 +30,8 @@ public class Grade {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Grade grade1 = (Grade) o;
-        return Objects.equals(gradeId, grade1.gradeId) &&
+        return gradeId != null &&
+                Objects.equals(gradeId, grade1.gradeId) &&
                 Objects.equals(grade, grade1.grade);
     }
 

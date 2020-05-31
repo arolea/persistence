@@ -13,6 +13,7 @@ import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +66,10 @@ class ORMTest {
         assertThat(addressOptional.isPresent())
                 .as("Address is properly fetched from the DB via its own repository")
                 .isTrue();
+
+        //studentRepository.findAll(PageRequest.of(1, 20));
+        //avoid the count query
+        //studentRepository.findAllStudents(PageRequest.of(1, 20));
     }
 
     @Test
@@ -99,7 +104,7 @@ class ORMTest {
     }
 
     @Test
-    public void testCascading() {
+    void testCascading() {
         Student student = studentService.cascadeInsertStudent();
 
         assertThat(student.getStudentId())
