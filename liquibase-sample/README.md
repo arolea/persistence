@@ -3,6 +3,7 @@
 **Documentation:**
 - [Available changes](https://docs.liquibase.com/change-types/home.html)
 - [Maven plugin documentation](https://docs.liquibase.com/tools-integrations/maven/commands/home.html) 
+- [Best practices](https://docs.liquibase.com/concepts/bestpractices.html)
 
 **Apply changesets:**
 - Apply pending changesets to the DB: `./mvnw liquibase:update` 
@@ -34,3 +35,11 @@
 - Generate a diff between two DBs (additional properties config required): `./mvnw liquibase:diff`
 - Generate DB documentation: `./mvnw liquibase:dbDoc`
 - Drop all DB changes: `./mvnw liquibase:dropAll`
+
+### Notes
+
+- Changeset: An atomic piece of DB migration code. Can be defined in XML, SQL, YAML and JSON.
+- Changelog: An aggregation of changesets.
+- DATABASECHANGELOG: Table that tracks which changesets were applied to the DB.
+- DATABASECHANGELOGLOCK: Table that tracks the locks associated with Liquibase migrations.
+- Contexts, labels and preconditions are used to conditionally run changesets.
