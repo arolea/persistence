@@ -18,8 +18,8 @@ public class Grade {
     @Column(name = "grade_id")
     private Long gradeId;
 
-    @Column(name = "grade")
-    private Double grade;
+    @Column(name = "grade_value")
+    private Double gradeValue;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", referencedColumnName = "student_id")
@@ -32,7 +32,7 @@ public class Grade {
         Grade grade1 = (Grade) o;
         return gradeId != null &&
                 Objects.equals(gradeId, grade1.gradeId) &&
-                Objects.equals(grade, grade1.grade);
+                Objects.equals(gradeValue, grade1.gradeValue);
     }
 
     @Override

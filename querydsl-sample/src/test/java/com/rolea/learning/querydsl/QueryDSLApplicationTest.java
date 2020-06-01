@@ -4,8 +4,7 @@ import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
-import com.rolea.learning.querydsl.domain.QStudent;
-import com.rolea.learning.querydsl.domain.Student;
+import com.rolea.learning.querydsl.domain.*;
 import com.rolea.learning.querydsl.repository.AddressRepository;
 import com.rolea.learning.querydsl.repository.CourseRepository;
 import com.rolea.learning.querydsl.repository.GradeRepository;
@@ -50,15 +49,18 @@ public class QueryDSLApplicationTest {
     private EntityManager entityManager;
 
     private QStudent qStudent = QStudent.student;
+    private QAddress qAddress = QAddress.address;
+    private QGrade qGrade = QGrade.grade;
+    private QCourse qCourse = QCourse.course;
     private JPAQuery<Student> query;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         dataUtils.populateData();
     }
 
     @AfterEach
-    public void tearDown(){
+    public void tearDown() {
         dataUtils.cleanData();
     }
 
@@ -148,7 +150,7 @@ public class QueryDSLApplicationTest {
                 // required to fetch the grades in the same query as the student
                 // without this, grades are lazily loaded
                 .innerJoin(qStudent.grades).fetchJoin()
-                .where(qStudent.grades.any().grade.eq(10D))
+                .where(qStudent.grades.any().gradeValue.eq(10D))
                 .distinct()
                 .fetch();
 
@@ -199,13 +201,14 @@ public class QueryDSLApplicationTest {
     }
 
     /**
-     * Fetch all the students associated with ALL of the given courses
+     * Fetch all Students associated with ALL of the given courses
      */
     @Test
     public void testFetchMatchingAllCourses() {
         log.info("Testing fetch all students that are registered to a given course");
 
         List<String> courseList = List.of("First", "Third");
+        // add any additional filtering logic here
         Predicate predicate = ExpressionUtils.allOf(courseList.stream()
                 .map(course -> qStudent.courses.any().courseName.eq(course))
                 .collect(toList()));
@@ -225,7 +228,7 @@ public class QueryDSLApplicationTest {
     }
 
     /**
-     * Fetch all the students associated with ANY of the given courses
+     * Fetch all Students associated with ANY of the given courses
      */
     @Test
     public void testFetchMatchingAnyCourses() {
@@ -251,19 +254,66 @@ public class QueryDSLApplicationTest {
     }
 
     @Test
-    public void testGroupByGradeValue() {
+    public void testGroupByApplicationSide() {
         log.info("Testing grouping students by grade values");
 
         log.info("Grouping by on application side");
         query = new JPAQuery<>(entityManager);
         Map<Double, List<Student>> studentMap = query.from(qStudent)
                 .innerJoin(qStudent.address).fetchJoin()
-                .transform(GroupBy.groupBy(qStudent.grades.any().grade).as(GroupBy.list(qStudent)));
+                .transform(GroupBy.groupBy(qStudent.grades.any().gradeValue).as(GroupBy.list(qStudent)));
 
         // test all relevant students are fetched
         assertThat(studentMap.size()).isEqualTo(2);
         assertThat(studentMap.get(10D).size()).isEqualTo(2);
         assertThat(studentMap.get(5D).size()).isEqualTo(1);
+
+        log.info("Finished test");
+    }
+
+    @Test
+    public void testGroupByDBSide_gradeAverage() {
+        log.info("Testing computing grade average for each student");
+
+        query = new JPAQuery<>(entityManager);
+        Map<Long, Double> gradeAverage = query
+                .from(qStudent)
+                .groupBy(qStudent.studentId)
+                .transform(GroupBy.groupBy(qStudent.studentId).as(qStudent.grades.any().gradeValue.avg()));
+
+        assertThat(gradeAverage.values().containsAll(List.of(7.5D, 10D))).isTrue();
+
+        log.info("Finished test");
+    }
+
+    @Test
+    public void testGroupByDBSide_studentsForCourse() {
+        log.info("Testing grouping the students for each curse");
+
+        log.info("Aggregating to Student");
+        query = new JPAQuery<>(entityManager);
+        Map<String, List<Student>> courseMap = query
+                .from(qCourse)
+                .innerJoin(qCourse.students, qStudent)
+                .innerJoin(qStudent.address, qAddress).fetchJoin()
+                .groupBy(qCourse.courseName, qStudent.studentId)
+                .transform(GroupBy.groupBy(qCourse.courseName).as(GroupBy.list(qStudent)));
+
+        assertThat(courseMap.get("First").size()).isEqualTo(2);
+        assertThat(courseMap.get("Second").size()).isEqualTo(1);
+        assertThat(courseMap.get("Third").size()).isEqualTo(1);
+
+        log.info("Aggregating to Student count");
+        query = new JPAQuery<>(entityManager);
+        Map<String, Long> courseStudentCount = query
+                .from(qCourse)
+                .innerJoin(qCourse.students, qStudent)
+                .groupBy(qCourse.courseName)
+                .transform(GroupBy.groupBy(qCourse.courseName).as(qStudent.studentId.count()));
+
+        assertThat(courseStudentCount.get("First")).isEqualTo(2L);
+        assertThat(courseStudentCount.get("Second")).isEqualTo(1L);
+        assertThat(courseStudentCount.get("Third")).isEqualTo(1L);
 
         log.info("Finished test");
     }

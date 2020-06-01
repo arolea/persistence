@@ -35,9 +35,9 @@ public class DataUtils {
         firstStudent.addAddress(firstStudentAddress);
 
         Grade firstStudentFirstGrade = new Grade();
-        firstStudentFirstGrade.setGrade(10D);
+        firstStudentFirstGrade.setGradeValue(10D);
         Grade firstStudentSecondGrade = new Grade();
-        firstStudentSecondGrade.setGrade(5D);
+        firstStudentSecondGrade.setGradeValue(5D);
         firstStudent.addGrade(firstStudentFirstGrade);
         firstStudent.addGrade(firstStudentSecondGrade);
 
@@ -60,7 +60,7 @@ public class DataUtils {
         secondStudent.addAddress(secondStudentAddress);
 
         Grade secondStudentFirstGrade = new Grade();
-        secondStudentFirstGrade.setGrade(10D);
+        secondStudentFirstGrade.setGradeValue(10D);
         secondStudent.addGrade(secondStudentFirstGrade);
 
         firstCourse = firstStudent.getCourses().stream()
