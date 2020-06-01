@@ -56,12 +56,16 @@ public class QueryDSLApplicationTest {
 
     @BeforeEach
     public void setUp() {
+        log.info("DB Setup begin");
         dataUtils.populateData();
+        log.info("DB Setup end");
     }
 
     @AfterEach
     public void tearDown() {
+        log.info("DB Clean-up begin");
         dataUtils.cleanData();
+        log.info("DB Clean-up end");
     }
 
     @Test
@@ -77,8 +81,6 @@ public class QueryDSLApplicationTest {
      */
     @Test
     public void testFetchByStudentName() {
-        log.info("Testing fetch by student name");
-
         log.info("Testing fetch that has a single result");
         query = new JPAQuery<>(entityManager);
         Student student = query.from(qStudent)
@@ -108,8 +110,6 @@ public class QueryDSLApplicationTest {
             assertThat(currentStudent.getStudentId()).isNotNull();
             assertThat(currentStudent.getAddress().getAddressId()).isNotNull();
         });
-
-        log.info("Finished test");
     }
 
     /**
@@ -117,23 +117,17 @@ public class QueryDSLApplicationTest {
      */
     @Test
     public void testFetchByAddressCity() {
-        log.info("Testing fetch by address city");
-
         query = new JPAQuery<>(entityManager);
         List<Student> studentList = query.from(qStudent)
                 .innerJoin(qStudent.address).fetchJoin()
                 .where(qStudent.address.city.eq("City"))
                 .fetch();
 
-        // test all relevant students are fetched
         assertThat(studentList.size()).isEqualTo(2);
         studentList.forEach(currentStudent -> {
-            // test all relevant data is properly fetched for each student
             assertThat(currentStudent.getStudentId()).isNotNull();
             assertThat(currentStudent.getAddress().getAddressId()).isNotNull();
         });
-
-        log.info("Finished test");
     }
 
     /**
@@ -141,29 +135,22 @@ public class QueryDSLApplicationTest {
      */
     @Test
     public void testFetchByGradeValue() {
-        log.info("Testing fetching all students that have a given grade");
-
         query = new JPAQuery<>(entityManager);
         List<Student> studentList = query.from(qStudent)
                 // required to fetch the address in the same query as the student
                 .innerJoin(qStudent.address).fetchJoin()
-                // required to fetch the grades in the same query as the student
-                // without this, grades are lazily loaded
+                // required to fetch the grades in the same query as the students, without this grades are lazily loaded
                 .innerJoin(qStudent.grades).fetchJoin()
                 .where(qStudent.grades.any().gradeValue.eq(10D))
                 .distinct()
                 .fetch();
 
-        // test all relevant students are fetched
         assertThat(studentList.size()).isEqualTo(2);
         studentList.forEach(currentStudent -> {
-            // test all relevant data is properly fetched for each student
             assertThat(currentStudent.getStudentId()).isNotNull();
             assertThat(currentStudent.getAddress().getAddressId()).isNotNull();
             currentStudent.getGrades().forEach(currentGrade -> assertThat(currentGrade.getGradeId()).isNotNull());
         });
-
-        log.info("Finished test");
     }
 
     /**
@@ -171,33 +158,25 @@ public class QueryDSLApplicationTest {
      */
     @Test
     public void testFetchByCourseName() {
-        log.info("Testing fetch all students that are registered to a given course");
-
         query = new JPAQuery<>(entityManager);
         List<Student> studentList = query.from(qStudent)
                 // required to fetch the address in the same query as the student
                 .innerJoin(qStudent.address).fetchJoin()
-                // required to fetch the grades in the same query as the student
-                // without this, grades are lazily loaded
+                // required to fetch the grades in the same query as the students, without this grades are lazily loaded
                 .innerJoin(qStudent.grades).fetchJoin()
-                // required to fetch the courses in the same query as the student
-                // without this, courses are lazily loaded
+                // required to fetch the courses in the same query as the student, without this courses are lazily loaded
                 .innerJoin(qStudent.courses).fetchJoin()
                 .where(qStudent.courses.any().courseName.eq("First"))
                 .distinct()
                 .fetch();
 
-        // test all relevant students are fetched
         assertThat(studentList.size()).isEqualTo(2);
         studentList.forEach(currentStudent -> {
-            // test all relevant data is properly fetched for each student
             assertThat(currentStudent.getStudentId()).isNotNull();
             assertThat(currentStudent.getAddress().getAddressId()).isNotNull();
             currentStudent.getGrades().forEach(currentGrade -> assertThat(currentGrade.getGradeId()).isNotNull());
             currentStudent.getCourses().forEach(currentCourse -> assertThat(currentCourse.getCourseId()).isNotNull());
         });
-
-        log.info("Finished test");
     }
 
     /**
@@ -205,8 +184,6 @@ public class QueryDSLApplicationTest {
      */
     @Test
     public void testFetchMatchingAllCourses() {
-        log.info("Testing fetch all students that are registered to a given course");
-
         List<String> courseList = List.of("First", "Third");
         // add any additional filtering logic here
         Predicate predicate = ExpressionUtils.allOf(courseList.stream()
@@ -223,8 +200,6 @@ public class QueryDSLApplicationTest {
                 .fetch();
 
         assertThat(studentList.size()).isEqualTo(1);
-
-        log.info("Finished test");
     }
 
     /**
@@ -232,8 +207,6 @@ public class QueryDSLApplicationTest {
      */
     @Test
     public void testFetchMatchingAnyCourses() {
-        log.info("Testing fetch all students that are registered to a given course");
-
         List<String> classesList = List.of("First", "Second");
         Predicate predicate = ExpressionUtils.anyOf(classesList.stream()
                 .map(course -> qStudent.courses.any().courseName.eq(course))
@@ -249,32 +222,28 @@ public class QueryDSLApplicationTest {
                 .fetch();
 
         assertThat(studentList.size()).isEqualTo(2);
-
-        log.info("Finished test");
     }
 
+    /**
+     * Groups students by grades via an application side group by
+     */
     @Test
     public void testGroupByApplicationSide() {
-        log.info("Testing grouping students by grade values");
-
-        log.info("Grouping by on application side");
         query = new JPAQuery<>(entityManager);
         Map<Double, List<Student>> studentMap = query.from(qStudent)
                 .innerJoin(qStudent.address).fetchJoin()
                 .transform(GroupBy.groupBy(qStudent.grades.any().gradeValue).as(GroupBy.list(qStudent)));
 
-        // test all relevant students are fetched
         assertThat(studentMap.size()).isEqualTo(2);
         assertThat(studentMap.get(10D).size()).isEqualTo(2);
         assertThat(studentMap.get(5D).size()).isEqualTo(1);
-
-        log.info("Finished test");
     }
 
+    /**
+     * Computes the average grade for students on the DB side
+     */
     @Test
     public void testGroupByDBSide_gradeAverage() {
-        log.info("Testing computing grade average for each student");
-
         query = new JPAQuery<>(entityManager);
         Map<Long, Double> gradeAverage = query
                 .from(qStudent)
@@ -282,14 +251,13 @@ public class QueryDSLApplicationTest {
                 .transform(GroupBy.groupBy(qStudent.studentId).as(qStudent.grades.any().gradeValue.avg()));
 
         assertThat(gradeAverage.values().containsAll(List.of(7.5D, 10D))).isTrue();
-
-        log.info("Finished test");
     }
 
+    /**
+     * Computes the student list and student count per course on the DB side
+     */
     @Test
     public void testGroupByDBSide_studentsForCourse() {
-        log.info("Testing grouping the students for each curse");
-
         log.info("Aggregating to Student");
         query = new JPAQuery<>(entityManager);
         Map<String, List<Student>> courseMap = query
@@ -314,8 +282,62 @@ public class QueryDSLApplicationTest {
         assertThat(courseStudentCount.get("First")).isEqualTo(2L);
         assertThat(courseStudentCount.get("Second")).isEqualTo(1L);
         assertThat(courseStudentCount.get("Third")).isEqualTo(1L);
+    }
 
-        log.info("Finished test");
+    /**
+     * Fetches the max grade from the DB
+     */
+    @Test
+    public void testGetMaxGrade() {
+        query = new JPAQuery<>(entityManager);
+        Double maxGrade = query
+                .from(qGrade)
+                .select(qGrade.gradeValue.max())
+                .fetchFirst();
+
+        assertThat(maxGrade).isEqualTo(10D);
+    }
+
+    /**
+     * Pagination example for students
+     */
+    @Test
+    public void testPagination() {
+        int pageSize = 1;
+        int pageIndex = 0;
+
+        query = new JPAQuery<>(entityManager);
+        List<Student> studentList = query.from(qStudent)
+                .innerJoin(qStudent.address).fetchJoin()
+                .offset(pageIndex * pageSize)
+                .limit(pageSize)
+                .fetch();
+
+        assertThat(studentList.size()).isEqualTo(1);
+        assertThat(studentList.get(0).getFirstName()).isEqualTo("John");
+
+        pageIndex = 1;
+
+        query = new JPAQuery<>(entityManager);
+        studentList = query.from(qStudent)
+                .innerJoin(qStudent.address).fetchJoin()
+                .offset(pageIndex * pageSize)
+                .limit(pageSize)
+                .fetch();
+
+        assertThat(studentList.size()).isEqualTo(1);
+        assertThat(studentList.get(0).getFirstName()).isEqualTo("Jane");
+
+        pageIndex = 2;
+
+        query = new JPAQuery<>(entityManager);
+        studentList = query.from(qStudent)
+                .innerJoin(qStudent.address).fetchJoin()
+                .offset(pageIndex * pageSize)
+                .limit(pageSize)
+                .fetch();
+
+        assertThat(studentList.size()).isEqualTo(0);
     }
 
 }
