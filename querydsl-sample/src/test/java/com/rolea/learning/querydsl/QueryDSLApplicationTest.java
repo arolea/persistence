@@ -180,6 +180,26 @@ public class QueryDSLApplicationTest {
     }
 
     /**
+     * Example of fetching students associated with a list of photo ids
+     */
+    @Test
+    public void testFetchByPhotoIds(){
+        query = new JPAQuery<>(entityManager);
+        List<Student> studentList = query.from(qStudent)
+                // required to fetch the address in the same query as the student
+                .innerJoin(qStudent.address).fetchJoin()
+                .where(qStudent.studentPhotoIds.any().in(1))
+                .distinct()
+                .fetch();
+
+        assertThat(studentList.size()).isEqualTo(2);
+        studentList.forEach(currentStudent -> {
+            assertThat(currentStudent.getStudentId()).isNotNull();
+            assertThat(currentStudent.getAddress().getAddressId()).isNotNull();
+        });
+    }
+
+    /**
      * Fetch all Students associated with ALL of the given courses
      */
     @Test

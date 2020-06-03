@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,6 +38,9 @@ public class Student {
             joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "course_id", referencedColumnName = "course_id"))
     private Set<Course> courses = new HashSet<>();
+
+    @ElementCollection
+    private List<Long> studentPhotoIds;
 
     public void addAddress(Address address) {
         this.address = address;

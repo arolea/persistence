@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 public class DataUtils {
 
@@ -48,6 +50,8 @@ public class DataUtils {
         firstStudent.addCourse(firstCourse);
         firstStudent.addCourse(secondCourse);
 
+        firstStudent.setStudentPhotoIds(List.of(1L, 2L));
+
         studentRepository.save(firstStudent);
 
         Student secondStudent = new Student();
@@ -71,6 +75,8 @@ public class DataUtils {
         Course thirdCourse = new Course();
         thirdCourse.setCourseName("Third");
         secondStudent.addCourse(thirdCourse);
+
+        secondStudent.setStudentPhotoIds(List.of(1L, 3L));
 
         studentRepository.save(secondStudent);
     }
