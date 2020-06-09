@@ -39,7 +39,9 @@ public class Student {
             inverseJoinColumns = @JoinColumn(name = "course_id", referencedColumnName = "course_id"))
     private Set<Course> courses = new HashSet<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "student_photo_ids", joinColumns = @JoinColumn(name = "student_id"))
+    @Column(name = "photo_id")
     private List<Long> studentPhotoIds;
 
     public void addAddress(Address address) {
