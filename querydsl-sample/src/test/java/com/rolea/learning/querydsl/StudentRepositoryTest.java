@@ -1,5 +1,7 @@
 package com.rolea.learning.querydsl;
 
+import com.querydsl.core.group.GroupBy;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.rolea.learning.querydsl.domain.Student;
 import com.rolea.learning.querydsl.repository.StudentRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -118,6 +121,40 @@ public class StudentRepositoryTest {
         long studentsCount = studentRepository.countStudents();
 
         assertThat(studentsCount).isEqualTo(2);
+    }
+
+    @Test
+    public void test_groupStudentsByGrades_success() {
+        Map<Double, List<Student>> studentMap = studentRepository.groupStudentsByGrades();
+
+        assertThat(studentMap.size()).isEqualTo(2);
+        assertThat(studentMap.get(10D).size()).isEqualTo(2);
+        assertThat(studentMap.get(5D).size()).isEqualTo(1);
+    }
+
+    @Test
+    public void test_computeGradeAveragePerStudent_success() {
+        Map<Long, Double> gradeAverage = studentRepository.computeGradeAveragePerStudent();
+
+        assertThat(gradeAverage.values().containsAll(List.of(7.5D, 10D))).isTrue();
+    }
+
+    @Test
+    public void test_groupStudentsByCourses_success() {
+        Map<String, List<Student>> courseMap = studentRepository.groupStudentsByCourses();
+
+        assertThat(courseMap.get("First").size()).isEqualTo(2);
+        assertThat(courseMap.get("Second").size()).isEqualTo(1);
+        assertThat(courseMap.get("Third").size()).isEqualTo(1);
+    }
+
+    @Test
+    public void test_computeStudentCountPerCourse_success() {
+        Map<String, Long> courseStudentCount = studentRepository.computeStudentCountPerCourse();
+
+        assertThat(courseStudentCount.get("First")).isEqualTo(2L);
+        assertThat(courseStudentCount.get("Second")).isEqualTo(1L);
+        assertThat(courseStudentCount.get("Third")).isEqualTo(1L);
     }
 
 }
