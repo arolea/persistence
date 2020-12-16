@@ -18,7 +18,6 @@ public class Grade {
     @Column(name = "grade_id")
     private Long gradeId;
 
-    @Column(name = "grade_value")
     private Double gradeValue;
 
     @ManyToOne(fetch = FetchType.LAZY)

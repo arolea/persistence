@@ -20,7 +20,6 @@ public class Course {
     @Column(name = "course_id")
     private Long courseId;
 
-    @Column(name = "course_name")
     private String courseName;
 
     @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)

@@ -13,17 +13,13 @@ import java.util.Objects;
 public class Address {
 
     @Id
-    @Column(name = "address_id")
     private Long addressId;
 
-    @Column(name = "street")
     private String street;
-
-    @Column(name = "city")
     private String city;
 
-    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
     private Student student;
 
     @Override
