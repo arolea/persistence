@@ -1,7 +1,5 @@
 package com.rolea.learning.querydsl;
 
-import com.querydsl.core.group.GroupBy;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.rolea.learning.querydsl.domain.Student;
 import com.rolea.learning.querydsl.repository.StudentRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -155,6 +153,40 @@ public class StudentRepositoryTest {
         assertThat(courseStudentCount.get("First")).isEqualTo(2L);
         assertThat(courseStudentCount.get("Second")).isEqualTo(1L);
         assertThat(courseStudentCount.get("Third")).isEqualTo(1L);
+    }
+
+    @Test
+    public void test_findByCourseSubQuery_success() {
+        List<Student> studentList = studentRepository.findByCourseSubQuery("First");
+
+        assertThat(studentList.size()).isEqualTo(2);
+        studentList.forEach(currentStudent -> {
+            assertThat(currentStudent.getStudentId()).isNotNull();
+            assertThat(currentStudent.getAddress().getAddressId()).isNotNull();
+            currentStudent.getGrades().forEach(currentGrade -> assertThat(currentGrade.getGradeId()).isNotNull());
+            currentStudent.getCourses().forEach(currentCourse -> assertThat(currentCourse.getCourseId()).isNotNull());
+        });
+    }
+
+    @Test
+    public void test_findStudentIdsForCourse_success() {
+        List<Long> studentIds = studentRepository.findStudentIdsByCourse("First");
+
+        assertThat(studentIds).containsExactlyInAnyOrder(1L, 2L);
+    }
+
+    @Test
+    public void test_findByProjectionForCourse_success() {
+        List<Student> studentList = studentRepository.findStudentProjectionByCourse("First");
+
+        assertThat(studentList.size()).isEqualTo(2);
+        studentList.forEach(currentStudent -> {
+            assertThat(currentStudent.getStudentId()).isNotNull();
+            assertThat(currentStudent.getFirstName()).isNotNull();
+            assertThat(currentStudent.getAddress()).isNull();
+            assertThat(currentStudent.getGrades()).isEmpty();
+            assertThat(currentStudent.getCourses()).isEmpty();
+        });
     }
 
 }

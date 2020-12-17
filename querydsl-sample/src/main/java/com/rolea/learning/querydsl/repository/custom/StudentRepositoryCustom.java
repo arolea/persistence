@@ -25,4 +25,10 @@ public interface StudentRepositoryCustom {
 
     Long countStudents();
 
+    List<Student> findByCourseSubQuery(String course);
+
+    List<Long> findStudentIdsByCourse(String course);
+
+    List<Student> findStudentProjectionByCourse(String course);
+
 }
