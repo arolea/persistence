@@ -12,7 +12,7 @@
     <artifactId>liquibase-sample</artifactId>
 
     <properties>
-        <liquibase.version>3.9.0</liquibase.version>
+        <liquibase.version>4.8.0</liquibase.version>
         <mysql.connector.version>8.0.20</mysql.connector.version>
     </properties>
 
