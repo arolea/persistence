@@ -13,7 +13,7 @@
 
     <properties>
         <liquibase.version>3.9.0</liquibase.version>
-        <mysql.connector.version>8.0.20</mysql.connector.version>
+        <mysql.connector.version>8.0.28</mysql.connector.version>
     </properties>
 
     <dependencies>
